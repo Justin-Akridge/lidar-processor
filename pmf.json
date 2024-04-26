@@ -1,0 +1,7 @@
+[
+    "input.las",
+    {
+        "type":"filters.pmf"
+    },
+    "output.las"
+]

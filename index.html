@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.116/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.116/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  <script src="https://unpkg.com/deck.gl@^9.0.0/dist.min.js"></script>
+  <script src="https://unpkg.com/@deck.gl/core@^9.0.0/dist.min.js"></script>
+  <script src="https://unpkg.com/@deck.gl/layers@^9.0.0/dist.min.js"></script>
+  <script type="module">
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwNDUxMjM2MS00ODYwLTRjYjEtODhmMy0yZGE3NGVlMjUyOTkiLCJpZCI6MjExMzY3LCJpYXQiOjE3MTQwNzI0MzN9.54sPRmtK-snUlZx3mB3PXADPHVwc1X43K0ybFCvIHhA';
+    var viewer = new Cesium.Viewer("cesiumContainer", {
+      terrain: Cesium.Terrain.fromWorldTerrain(),
+      animation: false,
+      pointSize: 13,
+    });
+
+
+
+    async function addPointCloudTileset() {
+        var pointCloudTileset = await Cesium.Cesium3DTileset.fromIonAssetId(2554033, {
+            pointCloudShading: {
+                attenuation: true,
+                backFaceCulling: true,
+                maximumAttenuation: 2,
+            },
+        });
+        viewer.scene.primitives.add(pointCloudTileset);
+
+        var boundingSphere = pointCloudTileset.boundingSphere;
+
+        viewer.camera.flyToBoundingSphere(boundingSphere, {
+            offset: new Cesium.HeadingPitchRange(
+            Cesium.Math.toRadians(10),
+            Cesium.Math.toRadians(-90),
+            boundingSphere.radius * 2.0
+            ),
+            duration: 0 
+        });
+
+        pointCloudTileset.style = new Cesium.Cesium3DTileStyle({
+            color: function(feature, result) {
+                return filterPoints(feature, result);
+            }
+        });
+
+
+
+    //   var startPosition = Cesium.Cartesian3.fromDegrees(-75.1641667, 39.9522222);
+    //   var endPosition = Cesium.Cartesian3.fromDegrees(-75.1643667, 39.9524222);
+    //   var numberOfSamples = 10; 
+
+    //   var positions = [];
+    //   var heightLabels = [];
+
+    //   for (var i = 0; i <= numberOfSamples; i++) {
+    //     var t = i / numberOfSamples;
+    //     var position = Cesium.Cartesian3.lerp(startPosition, endPosition, t, new Cesium.Cartesian3());
+    //     positions.push(position);
+
+    //     var cartographic = Cesium.Cartographic.fromCartesian(position);
+    //     var promise = Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [cartographic]);
+    //     Cesium.when(
+    //     promise,
+    //     function(heights) {
+    //         var height = heights[0].height;
+    //         var heightInFeet = height * 3.28084; 
+    //         var heightLabel = viewer.entities.add({
+    //             position: position,
+    //             label: {
+    //                 text: heightInFeet.toFixed(1) + ' ft',
+    //                 verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    //                 pixelOffset: new Cesium.Cartesian2(0, -10),
+    //                 eyeOffset: new Cesium.Cartesian3(0, 0, -height * 0.5),
+    //                 fillColor: Cesium.Color.WHITE,
+    //                 outlineColor: Cesium.Color.BLACK,
+    //                 outlineWidth: 2.0,
+    //                 font: '16px sans-serif',
+    //                 style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+    //                 disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    //             },
+    //         });
+    //         heightLabels.push(heightLabel);
+    //     },
+    //     function(error) {
+    //         console.error('Error:', error);
+    //     }
+// );
+
+    //   }
+    }
+
+    addPointCloudTileset();
+  </script>
+</body>
+</html>
